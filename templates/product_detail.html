@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block head %}
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-10 bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-6 sm:p-8 rounded-[2.5rem] shadow-xs">
+        
+        <!-- Image display -->
+        <div class="aspect-square bg-gray-50 dark:bg-slate-950 border border-gray-100 dark:border-slate-800 rounded-3xl overflow-hidden relative">
+            <img src="{{ product.image }}" alt="{{ product.name }}" class="object-cover w-full h-full">
+            <span class="absolute top-4 left-4 bg-emerald-600 text-white text-xs font-bold px-3 py-1 rounded-full">{{ product.category }}</span>
+        </div>
+
+        <!-- Meta specs details -->
+        <div class="flex flex-col justify-between space-y-6">
+            <div class="space-y-4">
+                <div class="space-y-1">
+                    <h2 class="font-outfit font-extrabold text-2xl sm:text-3xl text-gray-800 dark:text-white tracking-tight">{{ product.name }}</h2>
+                    <p class="text-xs text-gray-400">Listed by: <span class="font-bold text-emerald-600">{{ farmer.name }}</span> · {{ farmer.farmName }}</p>
+                </div>
+
+                <div class="flex items-center gap-2 py-1.5 px-3 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900 rounded-2xl w-fit">
+                    <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300">🌱 Organic Status: {{ product.organicStatus }}</span>
+                </div>
+
+                <p class="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{{ product.description }}</p>
+
+                <!-- Savings statistics box -->
+                <div class="grid grid-cols-3 gap-4 bg-gray-50 dark:bg-slate-950 p-4 rounded-2xl border border-gray-150/50 dark:border-slate-800">
+                    <div class="text-center">
+                        <span class="text-2xs font-semibold text-gray-400 block uppercase">Farmer Price</span>
+                        <span class="font-outfit font-extrabold text-lg text-gray-850 dark:text-white">₹{{ product.price }}</span>
+                    </div>
+                    <div class="text-center border-x border-gray-200 dark:border-slate-800">
+                        <span class="text-2xs font-semibold text-gray-400 block uppercase">Retail Price</span>
+                        <span class="font-outfit font-semibold text-sm text-red-500 line-through">₹{{ product.marketPrice }}</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-2xs font-semibold text-emerald-600 block uppercase">Direct Save</span>
+                        <span class="font-outfit font-extrabold text-lg text-emerald-600">₹{{ savings }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="space-y-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-950">
+                        <button onclick="changeQty(-1)" class="px-3.5 py-2 font-bold text-sm hover:bg-gray-100 dark:hover:bg-slate-800">-</button>
+                        <span id="qty-count" class="px-5 font-bold text-sm text-gray-800 dark:text-white">1</span>
+                        <button onclick="changeQty(1)" class="px-3.5 py-2 font-bold text-sm hover:bg-gray-100 dark:hover:bg-slate-800">+</button>
+                    </div>
+                    <button onclick="addCurrentToCart()" class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        Add to Shopping Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pricing history charts trends using Chart.js -->
+    <div class="bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-6 rounded-[2.5rem] shadow-xs">
+        <h3 class="font-outfit font-extrabold text-lg text-gray-800 dark:text-white mb-4">4-Week Price Trends</h3>
+        <div class="h-64 relative">
+            <canvas id="priceChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Recommended crops -->
+    <div class="space-y-4">
+        <h3 class="font-outfit font-extrabold text-xl text-gray-800 dark:text-white">Recommended Crops</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-6">
+            {% for r in recommended %}
+                <div class="bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-4 rounded-3xl hover-lift flex flex-col justify-between">
+                    <a href="{{ url_for('product_detail_view', id=r._id) }}" class="block">
+                        <div class="aspect-square bg-gray-50 dark:bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-gray-100 dark:border-slate-850">
+                            <img src="{{ r.image }}" alt="{{ r.name }}" class="object-cover w-full h-full">
+                        </div>
+                        <h4 class="font-bold text-xs truncate dark:text-white">{{ r.name }}</h4>
+                        <p class="font-outfit font-bold text-sm text-emerald-600 mt-1">₹{{ r.price }}/{{ r.unit }}</p>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let quantity = 1;
+    const qtySpan = document.getElementById('qty-count');
+
+    function changeQty(amount) {
+        quantity = Math.max(1, quantity + amount);
+        qtySpan.innerText = quantity;
+    }
+
+    function addCurrentToCart() {
+        const formData = new FormData();
+        formData.append('quantity', quantity);
+        
+        fetch(`/cart/add/{{ product._id }}`, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.success) {
+                location.reload();
+            } else {
+                alert(data.message);
+            }
+        });
+    }
+
+    // Chart.js Price History Initialization
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    
+    // Prepare historical data points
+    const dates = [];
+    const farmPrices = [];
+    const retailPrices = [];
+
+    {% for hp in product.historicalPrices %}
+        // format date cleanly
+        dates.push("Wk {{ loop.index }}");
+        farmPrices.push({{ hp.price }});
+        retailPrices.push({{ hp.marketPrice }});
+    {% endfor %}
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: dates,
+            datasets: [
+                {
+                    label: 'Direct Farm Price (₹)',
+                    data: farmPrices,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                    tension: 0.3,
+                    fill: true
+                },
+                {
+                    label: 'Retail Market Cost (₹)',
+                    data: retailPrices,
+                    borderColor: '#ef4444',
+                    backgroundColor: 'transparent',
+                    borderDash: [5, 5],
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

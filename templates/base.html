@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriConnect — Direct from Farmers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { outfit: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: { 600: '#1a7a3c', 700: '#155f2f', 50: '#f0fdf4' }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .font-outfit { font-family: 'Outfit', sans-serif; }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
+
+    <!-- ── NAVBAR ── -->
+    <nav class="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+
+                <!-- Logo -->
+                <a href="{{ url_for('home_view') }}" class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-green-700 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm0 14a6 6 0 110-12 6 6 0 010 12z"/>
+                            <path d="M10 6a1 1 0 00-1 1v3H6a1 1 0 000 2h3v3a1 1 0 002 0v-3h3a1 1 0 000-2h-3V7a1 1 0 00-1-1z"/>
+                        </svg>
+                    </div>
+                    <div class="leading-tight">
+                        <div class="font-outfit font-bold text-base text-gray-900">AgriConnect</div>
+                        <div class="text-[10px] text-green-700 font-medium">Direct from Farmers</div>
+                    </div>
+                </a>
+
+                <!-- Centre nav links -->
+                <div class="hidden md:flex items-center gap-8">
+                    <a href="{{ url_for('home_view') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Home</a>
+                    <a href="{{ url_for('products_view') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Products</a>
+                    <a href="{{ url_for('products_view', category='Vegetables') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Farmers</a>
+                    <a href="#about" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">About Us</a>
+                    <a href="#contact" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Contact</a>
+                    {% if current_user %}
+                        {% if current_user.role == 'farmer' %}
+                            <a href="{{ url_for('farmer_dashboard_view') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Dashboard</a>
+                        {% elif current_user.role == 'admin' or current_user.email == 'admin@farmconnect.com' %}
+                            <a href="{{ url_for('admin_dashboard_view') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">Admin</a>
+                        {% else %}
+                            <a href="{{ url_for('consumer_dashboard_view') }}" class="text-sm font-medium text-gray-700 hover:text-green-700 transition-colors">My Orders</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Right icons -->
+                <div class="flex items-center gap-3">
+                    <!-- Search -->
+                    <a href="{{ url_for('products_view') }}" class="p-2 text-gray-500 hover:text-green-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </a>
+                    <!-- Cart -->
+                    <a href="{{ url_for('cart_view') }}" class="relative p-2 text-gray-500 hover:text-green-700 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        {% if cart_count > 0 %}
+                            <span class="absolute -top-0.5 -right-0.5 bg-green-700 text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{{ cart_count }}</span>
+                        {% endif %}
+                    </a>
+                    <!-- User -->
+                    {% if current_user %}
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-green-700" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                </svg>
+                            </div>
+                            <a href="{{ url_for('logout_view') }}" class="text-xs text-red-500 hover:underline font-medium">Logout</a>
+                        </div>
+                    {% else %}
+                        <div class="flex items-center gap-2">
+                            <a href="{{ url_for('login_view') }}" class="p-2 text-gray-500 hover:text-green-700 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </a>
+                            <a href="{{ url_for('register_view') }}" class="bg-green-700 hover:bg-green-800 text-white text-xs font-semibold px-4 py-2 rounded-md transition-colors">Sign Up</a>
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 mt-3 w-full">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, msg in messages %}
+                    <div class="p-3 rounded-lg border mb-2 flex items-center justify-between text-sm
+                        {% if category == 'success' %}bg-green-50 border-green-200 text-green-800{% else %}bg-red-50 border-red-200 text-red-700{% endif %}">
+                        <span>{{ msg }}</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4 font-bold text-lg leading-none">&times;</button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Page content -->
+    <main class="flex-grow">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-gray-900 text-gray-400 py-10 mt-16">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center space-y-2">
+            <div class="font-outfit font-bold text-white text-lg">AgriConnect</div>
+            <p class="text-sm">Direct-to-Consumer Agricultural Platform &mdash; Connecting Farmers &amp; Buyers</p>
+            <p class="text-xs">&copy; 2026 AgriConnect. All rights reserved.</p>
+        </div>
+    </footer>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

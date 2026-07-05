@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- ── HERO ── -->
+<section class="bg-gray-50 border-b border-gray-100">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8 py-14 flex flex-col md:flex-row items-center gap-10">
+
+        <!-- Left: text -->
+        <div class="flex-1 space-y-5">
+            <h1 class="font-outfit font-extrabold text-4xl md:text-5xl text-gray-900 leading-tight">
+                Farm-Fresh Products,<br>Straight from the<br>Source
+            </h1>
+            <p class="text-gray-500 text-base max-w-md">
+                Connect directly with trusted farmers, enjoy fresher produce, fair prices, and complete transparency—without middlemen.
+            </p>
+            <div class="flex gap-3 pt-2">
+                <a href="{{ url_for('products_view') }}"
+                   class="bg-green-700 hover:bg-green-800 text-white font-semibold px-6 py-3 rounded-md text-sm transition-colors">
+                    Shop Now
+                </a>
+                <a href="#about"
+                   class="border border-gray-300 hover:border-green-700 hover:text-green-700 text-gray-700 font-semibold px-6 py-3 rounded-md text-sm transition-colors">
+                    Meet Our Farmers
+                </a>
+            </div>
+        </div>
+
+        <!-- Right: hero image -->
+        <div class="flex-1 flex justify-center md:justify-end">
+            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=700&h=500&q=85"
+                 alt="Fresh vegetables basket"
+                 class="w-full max-w-lg rounded-2xl object-cover shadow-lg"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=700&h=500&q=80';">
+        </div>
+    </div>
+</section>
+
+<!-- ── SHOP BY CATEGORY ── -->
+<section class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+    <div class="text-center mb-8 space-y-2">
+        <h2 class="font-outfit font-bold text-2xl text-green-700">Shop by Category</h2>
+        <div class="w-12 h-1 bg-green-700 rounded mx-auto"></div>
+        <p class="text-gray-500 text-sm">Explore our wide range of farm fresh products</p>
+    </div>
+
+    <!-- 3 main category cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+
+        <!-- Vegetables -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-lift">
+            <img src="https://images.unsplash.com/photo-1597362925123-77861d3fbac7?auto=format&fit=crop&w=600&h=350&q=80"
+                 alt="Vegetables"
+                 class="w-full h-52 object-cover"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&h=350&q=80';">
+            <div class="p-5 text-center space-y-2">
+                <h3 class="font-outfit font-bold text-lg text-green-700">Vegetables</h3>
+                <p class="text-gray-500 text-sm">Farm fresh and seasonal vegetables</p>
+                <a href="{{ url_for('products_view', category='Vegetables') }}"
+                   class="inline-block mt-2 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2 rounded-md transition-colors">
+                    Shop Vegetables
+                </a>
+            </div>
+        </div>
+
+        <!-- Fruits -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-lift">
+            <img src="https://images.unsplash.com/photo-1619566636858-adf3ef46400b?auto=format&fit=crop&w=600&h=350&q=80"
+                 alt="Fruits"
+                 class="w-full h-52 object-cover"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&h=350&q=80';">
+            <div class="p-5 text-center space-y-2">
+                <h3 class="font-outfit font-bold text-lg text-green-700">Fruits</h3>
+                <p class="text-gray-500 text-sm">Juicy, natural and seasonal fruits</p>
+                <a href="{{ url_for('products_view', category='Fruits') }}"
+                   class="inline-block mt-2 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2 rounded-md transition-colors">
+                    Shop Fruits
+                </a>
+            </div>
+        </div>
+
+        <!-- Grains & Pulses -->
+        <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-lift">
+            <img src="https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=600&h=350&q=80"
+                 alt="Grains and Pulses"
+                 class="w-full h-52 object-cover"
+                 onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&h=350&q=80';">
+            <div class="p-5 text-center space-y-2">
+                <h3 class="font-outfit font-bold text-lg text-green-700">Grains &amp; Pulses</h3>
+                <p class="text-gray-500 text-sm">High quality grains and pulses</p>
+                <a href="{{ url_for('products_view', category='Grains & Pulses') }}"
+                   class="inline-block mt-2 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold px-5 py-2 rounded-md transition-colors">
+                    Shop Grains &amp; Pulses
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- More categories row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {% for cat, icon, desc in [('Spices','🌶️','Aromatic spices'), ('Organic','🌿','Certified organic'), ('Seeds','🌱','Quality seeds')] %}
+            <a href="{{ url_for('products_view', category=cat) }}"
+               class="bg-white border border-gray-200 rounded-xl p-4 text-center hover-lift flex flex-col items-center gap-2">
+                <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center text-2xl">{{ icon }}</div>
+                <span class="font-semibold text-sm text-gray-800">{{ cat }}</span>
+                <span class="text-xs text-gray-400">{{ desc }}</span>
+            </a>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- ── FEATURED PRODUCTS ── -->
+{% if featured %}
+<section class="bg-gray-50 border-t border-gray-100 py-14">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h2 class="font-outfit font-bold text-2xl text-gray-900">Featured Products</h2>
+                <p class="text-gray-500 text-sm mt-1">Handpicked fresh from our farmers</p>
+            </div>
+            <a href="{{ url_for('products_view') }}" class="text-sm font-semibold text-green-700 hover:underline">View All &rarr;</a>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+            {% for p in featured %}
+                <div class="bg-white border border-gray-200 rounded-xl overflow-hidden hover-lift flex flex-col">
+                    <div class="relative">
+                        <img src="{{ p.image }}" alt="{{ p.name }}"
+                             class="w-full h-44 object-cover"
+                             onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=400&h=300&q=80';">
+                        <span class="absolute top-2 left-2 bg-green-700 text-white text-[10px] font-bold px-2 py-0.5 rounded">{{ p.category }}</span>
+                    </div>
+                    <div class="p-4 flex flex-col flex-grow">
+                        <h4 class="font-semibold text-sm text-gray-800 truncate">{{ p.name }}</h4>
+                        <p class="text-xs text-gray-400 mt-0.5 mb-3">Direct from farm</p>
+                        <div class="mt-auto flex items-center justify-between">
+                            <div class="flex flex-col gap-0.5">
+                                <div class="flex items-baseline gap-1.5">
+                                    <span class="font-bold text-green-700">₹{{ p.price }}<span class="text-xs text-gray-400 font-normal">/{{ p.unit }}</span></span>
+                                    <span class="text-xs text-gray-400 line-through">₹{{ p.marketPrice }}</span>
+                                </div>
+                                <span class="text-[10px] text-green-600 font-semibold">{{ p.discountPercentage }}% off</span>
+                            </div>
+                            <button onclick="addToCart('{{ p._id }}')"
+                                    class="bg-green-700 hover:bg-green-800 text-white text-xs font-semibold px-3 py-1.5 rounded transition-colors">
+                                Add +
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ── WHY CHOOSE US ── -->
+<section class="max-w-7xl mx-auto px-6 lg:px-8 py-14">
+    <div class="text-center mb-10">
+        <h2 class="font-outfit font-bold text-2xl text-gray-900">Why Choose AgriConnect?</h2>
+        <p class="text-gray-500 text-sm mt-2">We make buying from farmers simple, fair, and transparent</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="text-center p-6 bg-green-50 rounded-xl space-y-3">
+            <div class="text-4xl">🌾</div>
+            <h3 class="font-semibold text-gray-800">Direct from Source</h3>
+            <p class="text-sm text-gray-500">No middlemen. Buy directly from verified local farmers at fair prices.</p>
+        </div>
+        <div class="text-center p-6 bg-green-50 rounded-xl space-y-3">
+            <div class="text-4xl">✅</div>
+            <h3 class="font-semibold text-gray-800">Verified Farmers</h3>
+            <p class="text-sm text-gray-500">Every farmer on our platform is verified and trusted by our team.</p>
+        </div>
+        <div class="text-center p-6 bg-green-50 rounded-xl space-y-3">
+            <div class="text-4xl">🚚</div>
+            <h3 class="font-semibold text-gray-800">Fast Delivery</h3>
+            <p class="text-sm text-gray-500">Fresh produce delivered straight to your door at ₹5/km.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ── FARMER STORIES ── -->
+<section id="about" class="bg-gray-50 border-t border-gray-100 py-14">
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="text-center mb-10 space-y-2">
+            <h2 class="font-outfit font-bold text-2xl text-gray-900">Farmer Success Stories</h2>
+            <p class="text-gray-500 text-sm">Read how AgriConnect is improving livelihoods across rural India</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">👨‍🌾</div>
+                    <div>
+                        <div class="font-semibold text-sm text-gray-800">Ramesh Patel</div>
+                        <div class="text-xs text-gray-400">Gujarat</div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">"By listing my produce directly on AgriConnect, I avoided commission agents and increased my margins by 33%!"</p>
+                <div class="flex text-yellow-400 text-xs">★★★★★</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">👨‍🌾</div>
+                    <div>
+                        <div class="font-semibold text-sm text-gray-800">Harish Gowda</div>
+                        <div class="text-xs text-gray-400">Karnataka</div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">"Direct payments via UPI helped me align my tomato harvest with higher pricing windows. Game changer!"</p>
+                <div class="flex text-yellow-400 text-xs">★★★★★</div>
+            </div>
+            <div class="bg-white border border-gray-200 rounded-xl p-6 space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-xl">👨‍🌾</div>
+                    <div>
+                        <div class="font-semibold text-sm text-gray-800">Sunil Chaudhary</div>
+                        <div class="text-xs text-gray-400">Rajasthan</div>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500">"Selling ghee and spices directly gives consumers the best quality while securing my family's future."</p>
+                <div class="flex text-yellow-400 text-xs">★★★★★</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function addToCart(productId) {
+        const formData = new FormData();
+        formData.append('quantity', 1);
+        fetch(`/cart/add/${productId}`, { method: 'POST', body: formData })
+            .then(r => r.json())
+            .then(data => { if (data.success) location.reload(); else alert(data.message); });
+    }
+</script>
+{% endblock %}

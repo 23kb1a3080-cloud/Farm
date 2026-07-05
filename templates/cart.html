@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+    <div class="border-b border-gray-100 pb-4">
+        <h2 class="font-outfit font-extrabold text-2xl text-gray-800 dark:text-white">Shopping Cart</h2>
+        <p class="text-xs text-gray-400">Review selected farm yields before checkout</p>
+    </div>
+
+    {% if cart_items %}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Items list -->
+            <div class="lg:col-span-2 space-y-4">
+                {% for item in cart_items %}
+                    <div class="bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-4 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 w-full sm:w-auto">
+                            <!-- Image -->
+                            <div class="w-16 h-16 rounded-2xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 flex items-center justify-center">
+                                <img src="{{ item.image }}" alt="{{ item.name }}" class="object-cover w-full h-full">
+                            </div>
+                            <!-- Details -->
+                            <div>
+                                <h4 class="font-outfit font-bold text-gray-800 dark:text-white text-base truncate max-w-xs">{{ item.name }}</h4>
+                                <p class="text-sm font-bold text-emerald-600 mt-1">₹{{ item.price }} <span class="text-gray-400 text-2xs font-normal">/ {{ item.unit }}</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Quantity control -->
+                        <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                            <div class="flex items-center border border-gray-200 dark:border-slate-800 rounded-xl overflow-hidden bg-gray-50 dark:bg-slate-950">
+                                <form method="POST" action="{{ url_for('update_cart_quantity', id=item.product_id) }}">
+                                    <input type="hidden" name="action" value="decrease">
+                                    <button type="submit" class="px-3.5 py-1.5 font-bold text-xs hover:bg-gray-100 dark:hover:bg-slate-800">-</button>
+                                </form>
+                                <span class="px-4 text-xs font-bold text-gray-800 dark:text-white">{{ item.quantity }}</span>
+                                <form method="POST" action="{{ url_for('update_cart_quantity', id=item.product_id) }}">
+                                    <input type="hidden" name="action" value="increase">
+                                    <button type="submit" class="px-3.5 py-1.5 font-bold text-xs hover:bg-gray-100 dark:hover:bg-slate-800">+</button>
+                                </form>
+                            </div>
+                            
+                            <!-- Cost total & Remove -->
+                            <div class="flex items-center gap-4">
+                                <span class="font-outfit font-extrabold text-gray-900 dark:text-white text-sm">₹{{ item.total }}</span>
+                                <form method="POST" action="{{ url_for('update_cart_quantity', id=item.product_id) }}">
+                                    <input type="hidden" name="action" value="remove">
+                                    <button type="submit" class="text-red-500 hover:text-red-600 transition-colors">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Order Summary card -->
+            <div class="bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-6 rounded-[2.5rem] shadow-xs space-y-6 h-fit">
+                <h3 class="font-outfit font-bold text-lg text-gray-850 dark:text-white border-b border-gray-50 dark:border-slate-800 pb-3">Order Summary</h3>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-500 dark:text-gray-400">Cart Subtotal</span>
+                    <span class="font-bold text-gray-800 dark:text-white">₹{{ subtotal }}</span>
+                </div>
+                <div class="flex justify-between items-center text-sm text-gray-500 dark:text-gray-400">
+                    <span>Shipping Charges</span>
+                    <span class="text-2xs font-semibold">Computed at checkout</span>
+                </div>
+                <div class="border-t border-gray-100 dark:border-slate-850 pt-4 flex justify-between items-center">
+                    <span class="font-bold text-gray-800 dark:text-white">Est. Total</span>
+                    <span class="font-outfit font-extrabold text-lg text-gray-900 dark:text-white">₹{{ subtotal }}</span>
+                </div>
+
+                <a href="{{ url_for('checkout_view') }}" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-2">
+                    Proceed to Secure Checkout &rarr;
+                </a>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-gray-150/60 dark:border-slate-800 space-y-4 max-w-lg mx-auto">
+            <span class="text-5xl block">🛒</span>
+            <h3 class="font-bold text-gray-700 dark:text-white text-base">Your cart is empty</h3>
+            <p class="text-xs text-gray-400">Traced agricultural yield items added to your cart will appear here.</p>
+            <a href="{{ url_for('products_view') }}" class="inline-block px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-full shadow-xs">
+                Explore Market Produce
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+{% endblock %}

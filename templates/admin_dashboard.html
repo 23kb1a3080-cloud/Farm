@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 space-y-8">
+    
+    <!-- Welcome Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 dark:border-slate-800 pb-6">
+        <div>
+            <h2 class="font-outfit font-extrabold text-3xl text-gray-800 dark:text-white tracking-tight">System Admin Panel</h2>
+            <p class="text-sm text-gray-400">Manage agricultural approvals, track platform metrics, and trigger database seeders</p>
+        </div>
+        
+        <div class="flex gap-2">
+            <!-- Trigger Seeder Button -->
+            <form method="POST" action="{{ url_for('admin_trigger_seed') }}">
+                <button type="submit" onclick="return confirm('Re-seed the entire database? This clears old data.')" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-5 py-3 rounded-full shadow-xs transition-all">
+                    🌱 Run DB Seeder
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Analytics total metrics cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-150/60 dark:border-slate-850 shadow-xs space-y-1">
+            <span class="text-2xs font-semibold text-gray-400 uppercase tracking-wider block">Total Platform Sales</span>
+            <h4 class="font-outfit font-extrabold text-3xl text-gray-900 dark:text-white">₹{{ sales }}</h4>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-150/60 dark:border-slate-850 shadow-xs space-y-1">
+            <span class="text-2xs font-semibold text-gray-400 uppercase tracking-wider block">Registered Farmers</span>
+            <h4 class="font-outfit font-extrabold text-3xl text-emerald-600">{{ farmers }}</h4>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-150/60 dark:border-slate-850 shadow-xs space-y-1">
+            <span class="text-2xs font-semibold text-gray-400 uppercase tracking-wider block">Registered Consumers</span>
+            <h4 class="font-outfit font-extrabold text-3xl text-blue-600">{{ consumers }}</h4>
+        </div>
+        <div class="bg-white dark:bg-slate-900 p-6 rounded-3xl border border-gray-150/60 dark:border-slate-850 shadow-xs space-y-1">
+            <span class="text-2xs font-semibold text-gray-400 uppercase tracking-wider block">Total Crop Listings</span>
+            <h4 class="font-outfit font-extrabold text-3xl text-purple-600">{{ products }}</h4>
+        </div>
+    </div>
+
+    <!-- Farmer accounts management & approvals list -->
+    <div class="bg-white dark:bg-slate-900 border border-gray-150/60 dark:border-slate-800 p-6 rounded-[2.5rem] shadow-xs space-y-6">
+        <h3 class="font-outfit font-bold text-lg text-gray-800 dark:text-white border-b border-gray-50 dark:border-slate-850 pb-3">Farmer Directory & Approvals</h3>
+        
+        {% if farmers_list %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-500">
+                    <thead>
+                        <tr class="text-2xs text-gray-400 uppercase bg-gray-50 dark:bg-slate-950 rounded-xl">
+                            <th class="px-4 py-3">Farmer Details</th>
+                            <th class="px-4 py-3">Farm Name / Desc</th>
+                            <th class="px-4 py-3">Phone</th>
+                            <th class="px-4 py-3">Approval Status</th>
+                            <th class="px-4 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-slate-850 text-xs">
+                        {% for f in farmers_list %}
+                            <tr class="hover:bg-gray-50/40 dark:hover:bg-slate-900/50">
+                                <td class="px-4 py-4 font-bold text-gray-800 dark:text-white">
+                                    {{ f.name }}
+                                    <span class="block text-2xs text-gray-400 font-normal mt-0.5">{{ f.email }}</span>
+                                </td>
+                                <td class="px-4 py-4">
+                                    <p class="font-semibold text-gray-800 dark:text-white">{{ f.farmName }}</p>
+                                    <p class="text-2xs text-gray-400 truncate max-w-xs">{{ f.farmDescription }}</p>
+                                </td>
+                                <td class="px-4 py-4">{{ f.phone }}</td>
+                                <td class="px-4 py-4">
+                                    <span class="text-2xs font-semibold px-2 py-0.5 rounded-full border {% if f.isApproved %}bg-green-50 text-green-700 border-green-200{% else %}bg-amber-50 text-amber-700 border-amber-200{% endif %}">
+                                        {% if f.isApproved %}Approved{% else %}Pending{% endif %}
+                                    </span>
+                                </td>
+                                <td class="px-4 py-4 text-right">
+                                    {% if not f.isApproved %}
+                                        <form method="POST" action="{{ url_for('approve_farmer', id=f._id) }}">
+                                            <button type="submit" class="bg-emerald-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg">Approve</button>
+                                        </form>
+                                    {% else %}
+                                        <span class="text-gray-400 text-2xs">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-xs text-gray-400 text-center py-6">No farmers directory found.</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
