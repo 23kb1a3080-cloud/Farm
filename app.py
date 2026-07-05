@@ -4,7 +4,6 @@ import datetime
 from bson import ObjectId
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, flash
 import bcrypt
-import razorpay
 from database import users_col, products_col, orders_col, payments_col
 from config import Config
 
@@ -409,7 +408,7 @@ def checkout_view():
                     "farmerName": users_col.find_one({"_id": prod["farmer"]})["name"]
                 })
                 products_col.update_one({"_id": prod["_id"]}, {"$inc": {"stock": -item["quantity"]}})
-        payment_method = request.form.get('payment_method', 'Cash on Delivery')
+        payment_method = 'Cash on Delivery'
         order = {
             "consumer": current_user["_id"], "orderItems": order_items,
             "shippingAddress": shipping_address, 
@@ -418,7 +417,7 @@ def checkout_view():
             "phone": phone, 
             "totalPrice": total,
             "status": "Pending",
-            "paymentStatus": "Paid" if payment_method == 'Razorpay' else "Unpaid",
+            "paymentStatus": "Pending",
             "paymentMethod": payment_method, 
             "deliveryDistance": distance,
             "deliveryFee": delivery_fee, 
@@ -430,13 +429,6 @@ def checkout_view():
         session.pop('cart', None)
         session.pop('coupon_code', None)
         session.pop('coupon_discount', None)
-        if payment_method == 'Razorpay':
-            payments_col.insert_one({
-                "order": order_id, "consumer": current_user["_id"],
-                "razorpay_order_id": f"pay_test_{str(order_id)[:12]}",
-                "amount": total * 100, "currency": "INR", "status": "paid"
-            })
-            return redirect(url_for('payment_success', order_id=str(order_id)))
         flash("Order placed successfully!", "success")
         return redirect(url_for('consumer_dashboard_view'))
     return render_template('checkout.html', subtotal=subtotal, discount=discount,
