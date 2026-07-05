@@ -41,7 +41,6 @@ lerna-debug.log*
 .env.production.local
 *.env
 backend/.env
-config.py
 
 # OS Files
 .DS_Store
